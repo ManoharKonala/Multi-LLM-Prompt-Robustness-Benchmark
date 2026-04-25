@@ -23,9 +23,10 @@ The system supports TWO modes:
    ```
    Edit `.env` and add:
    ```env
-   OPENAI_API_KEY=your_key_here
-   ANTHROPIC_API_KEY=your_key_here
-   GOOGLE_API_KEY=your_key_here
+   OPENAI_API_KEY=your_openai_key
+   GOOGLE_API_KEY=your_gemini_key
+   GROQ_API_KEY=your_groq_key
+   HF_TOKEN=your_huggingface_token
    ```
 
 3. **Verify API Connections**:

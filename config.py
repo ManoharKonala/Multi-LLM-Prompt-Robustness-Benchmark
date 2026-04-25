@@ -8,12 +8,16 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+HF_TOKEN = os.getenv("HF_TOKEN")
 
 # Models to evaluate
 MODELS = {
     "gpt-4o-mini": "openai",
-    "claude-haiku": "anthropic",  # Maps to claude-haiku-4-5-20251001 in wrapper
-    "gemini-flash": "google"      # Maps to gemini-1.5-flash in wrapper
+    "claude-haiku": "anthropic",
+    "gemini-flash": "google",
+    "llama-3-8b": "groq",        # Groq Llama 3
+    "mistral-7b": "huggingface"   # HF Inference API or Local
 }
 
 # Datasets

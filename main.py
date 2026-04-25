@@ -13,7 +13,7 @@ from tqdm import tqdm
 from datasets import load_dataset
 
 from config import MODELS, DATASETS, NUM_SAMPLES, ATTACKS, RESULTS_FILE, CUSTOM_RESULTS_FILE
-from models import GPTWrapper, ClaudeWrapper, GeminiWrapper
+from models import GPTWrapper, ClaudeWrapper, GeminiWrapper, GroqWrapper, HFWrapper
 from attacks import generate_attacked_prompts
 from evaluation.scorer import calculate_robustness, evaluate_custom_prompt
 from evaluation.visualizer import (
@@ -33,9 +33,13 @@ def get_models() -> dict:
     if "gpt-4o-mini" in MODELS:
         wrappers["gpt-4o-mini"] = GPTWrapper(model_name="gpt-4o-mini")
     if "claude-haiku" in MODELS:
-        wrappers["claude-haiku"] = ClaudeWrapper(model_name="claude-haiku-4-5-20251001")
+        wrappers["claude-haiku"] = ClaudeWrapper(model_name="claude-3-5-haiku-latest")
     if "gemini-flash" in MODELS:
         wrappers["gemini-flash"] = GeminiWrapper(model_name="gemini-1.5-flash")
+    if "llama-3-8b" in MODELS:
+        wrappers["llama-3-8b"] = GroqWrapper(model_name="llama3-8b-8192")
+    if "mistral-7b" in MODELS:
+        wrappers["mistral-7b"] = HFWrapper(model_name="mistralai/Mistral-7B-v0.1")
     return wrappers
 
 

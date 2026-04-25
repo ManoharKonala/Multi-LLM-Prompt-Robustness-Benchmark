@@ -11,3 +11,7 @@ tqdm
 tabulate
 rich
 nltk
+groq
+huggingface_hub
+transformers
+torch
