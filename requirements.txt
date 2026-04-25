@@ -1,0 +1,13 @@
+openai
+anthropic
+google-generativeai
+datasets
+pandas
+matplotlib
+seaborn
+python-dotenv
+sentence-transformers
+tqdm
+tabulate
+rich
+nltk
