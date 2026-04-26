@@ -22,7 +22,7 @@ MODELS = {
 
 # Datasets
 DATASETS = ["sst2", "mmlu", "gsm8k"]
-NUM_SAMPLES = 100
+NUM_SAMPLES = 3
 
 # Attacks
 ATTACKS = [
