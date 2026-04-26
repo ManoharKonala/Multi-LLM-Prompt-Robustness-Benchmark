@@ -1,16 +1,45 @@
-# React + Vite
+# PRB Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The official visualization interface for the **Multi-LLM Prompt Robustness Benchmark**.
 
-Currently, two official plugins are available:
+## Overview
+This dashboard is a React-based web application that parses benchmark results and provides an interactive overview of model performance.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Features
+- **Robustness Matrix**: Real-time color-coded table of model scores across attack types.
+*   **Rankings**: Dynamic bar charts showing which LLM is most resilient.
+- **Run Log**: Real-time terminal output simulation.
+- **Coverage Map**: Roadmap of implemented and planned perturbation types.
 
-## React Compiler
+## Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1.  **Enter Directory**:
+    ```bash
+    cd frontend
+    ```
 
-## Expanding the ESLint configuration
+2.  **Install Packages**:
+    ```bash
+    npm install
+    ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3.  **Launch Dashboard**:
+    ```bash
+    npm run dev
+    ```
+
+## Data Integration
+The dashboard reads data from `public/results.csv`. When you run a benchmark on the backend:
+1.  The Python script saves results to `data/results.csv`.
+2.  Copy this file to `frontend/public/results.csv` to update the UI.
+
+```bash
+# Example copy command (Windows)
+copy ..\data\results.csv .\public\results.csv
+```
+
+## Tech Stack
+- **Framework**: React 18
+- **Build Tool**: Vite
+- **Styling**: Vanilla CSS (Terminal Aesthetic)
+- **Icons**: Lucide React

@@ -216,7 +216,11 @@ def run_custom_mode():
 # Benchmark Mode
 # ──────────────────────────────────────────────────────────────────────────────
 
-def run_benchmark_mode():
+def run_benchmark_mode(num_samples_override: int = None):
+    """
+    Runs the automated benchmark across all configured datasets and models.
+    Saves results to a CSV and generates visual heatmaps/charts.
+    """
     print("========================================")
     print("  Multi-LLM Prompt Robustness Benchmark")
     print("       ── Benchmark Mode ──")
@@ -224,11 +228,13 @@ def run_benchmark_mode():
 
     models = get_models()
     all_results: list[dict] = []
+    
+    samples_to_load = num_samples_override or NUM_SAMPLES
 
     for dataset_name in DATASETS:
         print(f"\n{'─'*50}")
         print(f"Loading dataset: {dataset_name}")
-        samples = _load_dataset_samples(dataset_name, NUM_SAMPLES)
+        samples = _load_dataset_samples(dataset_name, samples_to_load)
         if not samples:
             print(f"  ⚠ No samples loaded for {dataset_name}, skipping.")
             continue
@@ -310,7 +316,8 @@ def run_benchmark_mode():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Multi-LLM Prompt Robustness Benchmark"
+        description="Multi-LLM Prompt Robustness Benchmark (PRB)",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
         "--mode",
@@ -318,9 +325,15 @@ if __name__ == "__main__":
         required=True,
         help="Run mode: 'benchmark' for datasets, 'custom' for interactive prompt",
     )
+    parser.add_argument(
+        "--samples",
+        type=int,
+        default=None,
+        help="Number of samples per dataset (overrides config.py)",
+    )
     args = parser.parse_args()
 
     if args.mode == "custom":
         run_custom_mode()
     elif args.mode == "benchmark":
-        run_benchmark_mode()
+        run_benchmark_mode(num_samples_override=args.samples)

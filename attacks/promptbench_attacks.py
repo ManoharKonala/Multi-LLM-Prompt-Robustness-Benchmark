@@ -114,7 +114,12 @@ def _char_substitute(word: str) -> str:
 
 def textbugger_attack(text: str, perturb_ratio: float = 0.3) -> str:
     """
-    TextBugger: applies random character-level perturbations to important words.
+    TextBugger: Character-level perturbations.
+    Targets important tokens and applies random typos:
+    1. Swapping adjacent characters.
+    2. Inserting a random character.
+    3. Deleting a character.
+    4. Visually similar substitution (e.g., 'a' -> '@').
     """
     words_info = _get_words_and_indices(text)
     if not words_info:
@@ -152,8 +157,9 @@ def textbugger_attack(text: str, perturb_ratio: float = 0.3) -> str:
 
 def deepwordbug_attack(text: str, perturb_ratio: float = 0.3) -> str:
     """
-    DeepWordBug: targets the most important words with character-level bugs.
-    Uses swap, substitution, deletion, and insertion — one per word.
+    DeepWordBug: Word-level character errors.
+    Similar to TextBugger but focuses on causing maximum confusion for 
+    word-level tokenizers by injecting specific 'bugs' into high-importance tokens.
     """
     words_info = _get_words_and_indices(text)
     if not words_info:
@@ -207,7 +213,10 @@ def _get_synonym(word: str) -> str | None:
 
 def textfooler_attack(text: str, perturb_ratio: float = 0.4) -> str:
     """
-    TextFooler: replaces important words with WordNet synonyms.
+    TextFooler: Semantic synonym replacement.
+    Identifies the most important words and replaces them with synonyms 
+    from WordNet. This tests if the model is sensitive to word choice 
+    even when the core meaning is preserved.
     """
     words_info = _get_words_and_indices(text)
     if not words_info:
@@ -215,6 +224,7 @@ def textfooler_attack(text: str, perturb_ratio: float = 0.4) -> str:
 
     words = [w for w, _, _ in words_info]
     ranking = _importance_ranking(words)
+    num_to_perturb = max(1, int(len(words) * perturb_ratio))
     # BUG FIX: Collect target words and their synonyms first, then sort by string position.
     to_perturb = []
     for rank_idx in ranking:
@@ -259,7 +269,9 @@ DISTRACTOR_SENTENCES = [
 
 def checklist_attack(text: str) -> str:
     """
-    CheckList: appends 1–2 random irrelevant sentences to the prompt.
+    CheckList: Irrelevant sentence injection.
+    Appends 1-2 random, factual but unrelated sentences to the prompt 
+    to test if the model's attention is distracted by noise.
     """
     num_distractors = random.randint(1, 2)
     distractors = random.sample(DISTRACTOR_SENTENCES, num_distractors)
@@ -281,7 +293,9 @@ FILLER_SENTENCES = [
 
 def stresstest_attack(text: str, num_repeats: int = 3) -> str:
     """
-    StressTest: appends repeated filler/noise sentences to the prompt.
+    StressTest: Redundant filler injection.
+    Appends a long string of repeated characters or symbols to the end 
+    of the prompt to test robustness against long, low-entropy noise.
     """
     filler = random.choice(FILLER_SENTENCES)
     repeated = " ".join([filler] * num_repeats)

@@ -1,57 +1,105 @@
-# Multi-LLM Prompt Robustness Benchmark
+# Multi-LLM Prompt Robustness Benchmark (PRB)
 
-A Python-based benchmarking system that tests how robustly different LLMs (GPT-4o-mini, Claude Haiku, Gemini Flash) handle prompt variations and adversarial attacks.
+[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
+[![React](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61dafb.svg)](https://reactjs.org/)
 
-## Modes
+A professional framework for evaluating the adversarial robustness of Large Language Models. This system measures how significantly accuracy drops when prompts are subjected to character-level, word-level, and sentence-level perturbations.
 
-The system supports TWO modes:
+---
 
-1. **Benchmark Mode** — Uses built-in datasets (SST2, MMLU, GSM8K) with automatic scoring.
-2. **Custom Prompt Mode** — User types their own prompt, the system attacks it, sends all versions to all LLMs, and shows how each model responds side by side.
+## 🏗️ System Architecture
 
-## Setup
+The project follows a decoupled architecture separating the heavy benchmarking logic from the visualization dashboard.
 
-1. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+```mermaid
+graph TD
+    subgraph "Backend (Python)"
+        A[Benchmark CLI] --> B[Model Factory]
+        A --> C[Attack Engine]
+        A --> D[Dataset Loader]
+        B --> E{LLM APIs}
+        E -->|Responses| F[Scoring Engine]
+        F --> G[(results.csv)]
+    end
 
-2. **API Keys**:
-   Copy `.env.example` to `.env` and add your API keys:
-   ```bash
-   cp .env.example .env
-   ```
-   Edit `.env` and add:
-   ```env
-   OPENAI_API_KEY=your_openai_key
-   GOOGLE_API_KEY=your_gemini_key
-   GROQ_API_KEY=your_groq_key
-   HF_TOKEN=your_huggingface_token
-   ```
+    subgraph "Frontend (React)"
+        G --> H[Vite Dev Server]
+        H --> I[Robustness Dashboard]
+    end
 
-3. **Verify API Connections**:
-   Run the test script to make sure your API keys are working:
-   ```bash
-   python test_models.py
-   ```
+    E --- GPT[GPT-4o]
+    E --- CL[Claude 3.5]
+    E --- GM[Gemini 2.0]
+    E --- LQ[Llama 3.3 via Groq]
+```
 
-## Usage
+---
 
-### Custom Prompt Mode
-Type your own prompt and see how models react to typos, paraphrasing, and adversarial attacks.
+## 🚀 Key Features
 
+*   **Dual-Mode Evaluation**:
+    *   **Benchmark Mode**: Automated testing across **SST-2**, **MMLU**, and **GSM8K** datasets.
+    *   **Custom Mode**: Interactive sandbox to test your own prompts against adversarial variations.
+*   **Adversarial Attack Suite**: Implements research-standard perturbations including **TextBugger**, **DeepWordBug**, and **TextFooler**.
+*   **Multi-Provider Support**: Built-in wrappers for OpenAI, Anthropic, Google Gemini, and Groq (Llama/Mistral).
+*   **Professional Dashboard**: A terminal-aesthetic React UI for real-time tracking of robustness metrics and model rankings.
+
+---
+
+## 🛠️ Installation & Setup
+
+### 1. Backend Setup
+```bash
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Configure environment variables
+cp .env.example .env
+# Add your API keys to .env
+```
+
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 📊 Methodology
+
+### Adversarial Attacks
+We evaluate model resilience using five distinct perturbation strategies:
+1.  **TextBugger**: Injects typos using character swaps, insertions, and deletions.
+2.  **DeepWordBug**: Targets high-importance tokens with character-level bugs.
+3.  **TextFooler**: Replaces tokens with semantically similar synonyms (WordNet).
+4.  **CheckList**: Appends irrelevant distracting sentences to test attention.
+5.  **StressTest**: Appends repeated filler text to evaluate context length handling.
+
+### Metrics
+*   **Clean Accuracy**: Baseline performance on original prompts.
+*   **Attacked Accuracy**: Performance under adversarial conditions.
+*   **Robustness Score**: A ratio calculation `(Attacked Acc / Clean Acc)` representing the model's "resilience" to noise.
+
+---
+
+## 📈 Usage
+
+### Run Automated Benchmark
+```bash
+python main.py --mode benchmark --samples 10
+```
+
+### Run Interactive Sandbox
 ```bash
 python main.py --mode custom
 ```
 
-### Benchmark Mode
-Run the full benchmark across 3 datasets and 5 attack types.
+### View Results
+Open the dashboard at `http://localhost:5173` to see the live rankings and robustness heatmaps.
 
-```bash
-python main.py --mode benchmark
-```
+---
 
-## Results
-
-- `data/custom_results.csv` and `data/results.csv` contain the raw data.
-- `charts/` will contain bar charts and heatmaps visualizing the robustness of each model.
+## 📜 License
+MIT License. Created for LLM Robustness Research.
