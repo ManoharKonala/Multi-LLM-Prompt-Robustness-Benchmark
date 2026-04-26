@@ -35,9 +35,9 @@ def get_models() -> dict:
     if "claude-haiku" in MODELS:
         wrappers["claude-haiku"] = ClaudeWrapper(model_name="claude-3-5-haiku-latest")
     if "gemini-flash" in MODELS:
-        wrappers["gemini-flash"] = GeminiWrapper(model_name="gemini-1.5-flash")
+        wrappers["gemini-flash"] = GeminiWrapper(model_name="gemini-2.0-flash")
     if "llama-3-8b" in MODELS:
-        wrappers["llama-3-8b"] = GroqWrapper(model_name="llama3-8b-8192")
+        wrappers["llama-3-8b"] = GroqWrapper(model_name="llama-3.3-70b-versatile")
     if "mistral-7b" in MODELS:
         wrappers["mistral-7b"] = HFWrapper(model_name="mistralai/Mistral-7B-v0.1")
     return wrappers

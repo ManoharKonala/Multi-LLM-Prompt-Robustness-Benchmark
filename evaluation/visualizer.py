@@ -108,7 +108,9 @@ def plot_robustness_heatmap(df: pd.DataFrame):
     if df.empty or 'Attack Type' not in df.columns:
         return
         
-    pivot_df = df.pivot(index='Model', columns='Attack Type', values='Robustness Score')
+    # Aggregate across datasets before pivoting to avoid duplicate index error
+    agg_df = df.groupby(['Model', 'Attack Type'], as_index=False)['Robustness Score'].mean()
+    pivot_df = agg_df.pivot(index='Model', columns='Attack Type', values='Robustness Score')
     
     plt.figure(figsize=(8, 6))
     sns.heatmap(pivot_df, annot=True, cmap='RdYlGn', fmt=".1f", vmin=0, vmax=100)
