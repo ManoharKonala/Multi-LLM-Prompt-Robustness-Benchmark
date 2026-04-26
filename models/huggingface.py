@@ -16,14 +16,14 @@ class HFWrapper(BaseModelWrapper):
             return None
             
         try:
-            # Simple text generation via Inference API
-            response = self.client.text_generation(
-                prompt,
-                max_new_tokens=512,
-                temperature=self.temperature if self.temperature > 0 else 0.01, # HF API requires > 0
-                return_full_text=False
+            # Use chat_completion for broader compatibility with 'Instruct' models
+            messages = [{"role": "user", "content": prompt}]
+            response = self.client.chat_completion(
+                messages=messages,
+                max_tokens=512,
+                temperature=self.temperature if self.temperature > 0 else 0.01,
             )
-            return response
+            return response.choices[0].message.content
         except Exception as e:
             print(f"Error in HF Inference API: {e}")
             return None

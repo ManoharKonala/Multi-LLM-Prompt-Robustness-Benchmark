@@ -7,11 +7,11 @@ from config import CHARTS_DIR
 
 def get_emoji(score: float) -> str:
     if score >= 0.85:
-        return "✅"
+        return "[OK]"
     elif score >= 0.70:
-        return "⚠️"
+        return "[WARN]"
     else:
-        return "❌"
+        return "[FAIL]"
 
 def print_custom_mode_table(base_prompt: str, results: dict):
     """

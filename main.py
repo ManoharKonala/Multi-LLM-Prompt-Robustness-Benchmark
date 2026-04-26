@@ -161,7 +161,7 @@ def run_custom_mode():
     # Show generated attacks
     for name, text in attacked_prompts.items():
         if name != "Original":
-            print(f"  {name:15s}: {text[:80]}{'…' if len(text) > 80 else ''}")
+            print(f"  {name:15s}: {text[:80]}{'...' if len(text) > 80 else ''}")
 
     models = get_models()
     results: dict[str, dict[str, float]] = {m: {} for m in models}
@@ -176,6 +176,10 @@ def run_custom_mode():
 
         # Baseline
         orig_response = wrapper.generate(prompt)
+        if orig_response is None:
+            print(" Skipping (baseline failed)")
+            continue
+            
         results[model_name]["Original"] = 1.0
         all_responses.append({
             "Model": model_name,
@@ -200,7 +204,7 @@ def run_custom_mode():
                 "Similarity": score,
             })
 
-        print("      ✓")
+        print(" Done")
 
     # Save
     print(f"\nSaving results to {CUSTOM_RESULTS_FILE}...")
@@ -266,8 +270,7 @@ def run_benchmark_mode(num_samples_override: int = None):
                     att_resp = wrapper.generate(att_prompt)
                     if _check_answer(att_resp, label, dataset_name):
                         correct_attacked[attack_name] += 1
-
-            # ── Scoring ──
+                print(" Done")
             total = len(samples)
             clean_acc = correct_clean / total if total else 0
 
