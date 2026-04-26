@@ -39,7 +39,7 @@ def get_models() -> dict:
     if "llama-3-8b" in MODELS:
         wrappers["llama-3-8b"] = GroqWrapper(model_name="llama-3.3-70b-versatile")
     if "mistral-7b" in MODELS:
-        wrappers["mistral-7b"] = HFWrapper(model_name="mistralai/Mistral-7B-v0.1")
+        wrappers["mistral-7b"] = HFWrapper(model_name="mistralai/Mistral-7B-Instruct-v0.2")
     return wrappers
 
 
@@ -132,7 +132,11 @@ def _check_answer(response: str | None, label: str, dataset_name: str) -> bool:
         return bool(re.search(pattern, response_lower))
 
     elif dataset_name == "gsm8k":
-        return label_lower in response_lower
+        # BUG FIX: Use regex to match the exact number or check for word boundaries
+        # to prevent "5" from matching "15".
+        import re
+        pattern = rf"\b{re.escape(label_lower)}\b"
+        return bool(re.search(pattern, response_lower))
 
     return label_lower in response_lower
 

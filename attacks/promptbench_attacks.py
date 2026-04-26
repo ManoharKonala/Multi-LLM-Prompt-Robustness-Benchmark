@@ -125,15 +125,19 @@ def textbugger_attack(text: str, perturb_ratio: float = 0.3) -> str:
     num_to_perturb = max(1, int(len(words) * perturb_ratio))
 
     perturbations = [_char_swap, _char_insert, _char_delete, _char_substitute]
+    
+    # BUG FIX: Sort the selected indices by their string position (left-to-right) 
+    # so the 'offset' logic correctly tracks character shifts.
+    selected_indices = sorted(ranking[:num_to_perturb], key=lambda i: words_info[i][1])
 
     result = list(text)
     offset = 0
 
-    for rank_idx in ranking[:num_to_perturb]:
-        word, start, end = words_info[rank_idx]
+    for idx in selected_indices:
+        word, start, end = words_info[idx]
         perturb_fn = random.choice(perturbations)
         new_word = perturb_fn(word)
-        # Apply with offset tracking
+        
         adj_start = start + offset
         adj_end = end + offset
         result[adj_start:adj_end] = list(new_word)
@@ -161,15 +165,20 @@ def deepwordbug_attack(text: str, perturb_ratio: float = 0.3) -> str:
 
     bugs = [_char_swap, _char_substitute, _char_delete, _char_insert]
 
+    # BUG FIX: Sort the selected indices by their string position (left-to-right) 
+    # so the 'offset' logic correctly tracks character shifts.
+    selected_indices = sorted(ranking[:num_to_perturb], key=lambda i: words_info[i][1])
+
     result = list(text)
     offset = 0
 
-    for rank_idx in ranking[:num_to_perturb]:
-        word, start, end = words_info[rank_idx]
+    for idx in selected_indices:
+        word, start, end = words_info[idx]
         if len(word) <= 2:
             continue
         bug_fn = random.choice(bugs)
         new_word = bug_fn(word)
+        
         adj_start = start + offset
         adj_end = end + offset
         result[adj_start:adj_end] = list(new_word)
@@ -206,23 +215,28 @@ def textfooler_attack(text: str, perturb_ratio: float = 0.4) -> str:
 
     words = [w for w, _, _ in words_info]
     ranking = _importance_ranking(words)
-    num_to_perturb = max(1, int(len(words) * perturb_ratio))
-
-    result = list(text)
-    offset = 0
-    replaced = 0
-
+    # BUG FIX: Collect target words and their synonyms first, then sort by string position.
+    to_perturb = []
     for rank_idx in ranking:
-        if replaced >= num_to_perturb:
+        if len(to_perturb) >= num_to_perturb:
             break
         word, start, end = words_info[rank_idx]
         synonym = _get_synonym(word)
         if synonym:
-            adj_start = start + offset
-            adj_end = end + offset
-            result[adj_start:adj_end] = list(synonym)
-            offset += len(synonym) - len(word)
-            replaced += 1
+            to_perturb.append((rank_idx, synonym))
+
+    # Sort from left to right
+    to_perturb.sort(key=lambda x: words_info[x[0]][1])
+
+    result = list(text)
+    offset = 0
+
+    for rank_idx, synonym in to_perturb:
+        word, start, end = words_info[rank_idx]
+        adj_start = start + offset
+        adj_end = end + offset
+        result[adj_start:adj_end] = list(synonym)
+        offset += len(synonym) - len(word)
 
     return "".join(result)
 
